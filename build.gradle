@@ -16,4 +16,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    // Filter test class via -PsingleTest=org.example.TestOne
+    if (project.hasProperty("singleTest")) {
+        def testClass = project.getProperty("singleTest")
+        include "**/${testClass.replace('.', '/')}.class"
+    }
 }
