@@ -2,31 +2,42 @@ name: Java CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "**" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "**" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Build with Gradle
+
+      - name: Build the Project
         run: ./gradlew build
 
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Run Tests
+
+      - name: Run All Tests (on main)
+        if: github.ref == 'refs/heads/main'
         run: ./gradlew test
+
+      - name: Run Only TestOne (on other branches)
+        if: github.ref != 'refs/heads/main'
+        run: ./gradlew test -PsingleTest=org.example.TestOne
